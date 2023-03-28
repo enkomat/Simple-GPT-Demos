@@ -455,7 +455,6 @@ namespace Simple_GPT_Dialog
             };
 
             string r = JsonConvert.SerializeObject(requestBody);
-            Debug.Log(r);
             byte[] body = Encoding.UTF8.GetBytes(r);
 
             var request = new UnityWebRequest("https://api.openai.com/v1/chat/completions", "POST");
