@@ -2,8 +2,6 @@
 
 ![alt text](Screenshot.png)
 
-With this pack of demos you should be able to hit the ground running, if you're interested in making a game powered by OpenAI's GPT.
-
 ### Getting started
 
 **1.** You need an API key from OpenAI, which are available to everyone for free. If you don't have an OpenAI account, you'll have sign up on  **[their website](https://openai.com/api/)**. You can also sign in with a Google or Microsoft account, if you don't want a separate account.
