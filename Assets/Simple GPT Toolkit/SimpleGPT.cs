@@ -114,6 +114,7 @@ namespace Simple_GPT_Dialog
             _currentChatHistory.Add(new Message("system", "The following is a conversation between user called " + _playerName + " and a character called " + _npcName +
                                                           ".\n \n" + description));
             character.ChatHistoryList = _currentChatHistory;
+            _stopSequences = new string[] { playerName + ":", character.CharacterName + ":" };
         }
 
         public void ReturnToChat(string playerName, SimpleGPTCharacter character)
