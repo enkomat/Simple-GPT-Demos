@@ -12,23 +12,7 @@ namespace Simple_GPT_Dialog
     public class SimpleGPT : MonoBehaviour
     {
         #region Editor Variables
-
-        public enum ModelOptions
-        {
-            ChatGPT,
-            Davinci,
-            Curie,
-            Babbage,
-            Ada
-        }
-
-        [Tooltip(
-            "Model used to generate the text.")]
-        public ModelOptions Model;
-        [Tooltip(
-            "Checking game state only works with ChatGPT.")]
-        public bool CheckForGameStateChanges = false;
-        private string _modelName;
+        
         public bool AutoLoadOnAwake = true;
 
         [Header("Response generation")]
@@ -44,6 +28,14 @@ namespace Simple_GPT_Dialog
 
         [Range(0.0f, 2.0f)] [Tooltip("Increases the model's likelihood to talk about new topics.")]
         public float PresencePenalty = 0f;
+        
+        [Tooltip(
+            "Model that's currently in use. Only works with GPT 3.5 or higher.")]
+        public string ModelName = "gpt-3.5-turbo";
+        
+        [Tooltip(
+            "Checking game state only works with ChatGPT.")]
+        public bool CheckForGameStateChanges = false;
         
         #endregion
 
@@ -70,21 +62,7 @@ namespace Simple_GPT_Dialog
         public static event OnGPTChatResponse onGPTChatResponse;
 
         #endregion
-        
-        private void OnValidate()
-        {
-            CheckForModelChange();
-        }
-        
-        private void CheckForModelChange()
-        {
-            if (Model == ModelOptions.ChatGPT) _modelName = "gpt-3.5-turbo";
-            else if (Model == ModelOptions.Davinci) _modelName = "text-davinci-003";
-            else if (Model == ModelOptions.Curie) _modelName = "text-curie-001";
-            else if (Model == ModelOptions.Babbage) _modelName = "text-babbage-001";
-            else if (Model == ModelOptions.Ada) _modelName = "text-ada-001";
-        }
-        
+
         private void APIKeyWarning()
         {
             if (String.IsNullOrEmpty(_apiKey))
@@ -103,8 +81,7 @@ namespace Simple_GPT_Dialog
         
         private void TestGPTConnection()
         {
-            if(Model == ModelOptions.ChatGPT) StartCoroutine(TestRequest());
-            else StartCoroutine(LegacyTestRequest());
+            StartCoroutine(TestRequest());
         }
 
         #region Chat State Methods
@@ -157,20 +134,16 @@ namespace Simple_GPT_Dialog
 
             _currentResponseHistory += "\n \n" + _playerName + ": " + prompt + "\n \n" + _npcName + ": ";
             _currentChatHistory.Add(new Message("user", _playerName + ": " + prompt));
-            if (Model == ModelOptions.ChatGPT)
+            if (CheckForGameStateChanges)
             {
-                if (CheckForGameStateChanges)
-                {
-                    StartCoroutine(CheckForStateChange(_currentChatHistory, _currentCharacter));
-                }
-                else
-                {
-                    StartCoroutine(ChatRequest(_currentChatHistory));
-                }
+                StartCoroutine(CheckForStateChange(_currentChatHistory, _currentCharacter));
             }
-            else StartCoroutine(LegacyChatRequest(_currentResponseHistory));
+            else
+            {
+                StartCoroutine(ChatRequest(_currentChatHistory));
+            }
         }
-        
+
         public void EndCurrentChat()
         {
             _currentResponseHistory = "";
@@ -200,33 +173,15 @@ namespace Simple_GPT_Dialog
         {
             var requestBody = new
             {
-                model = _modelName,
+                model = ModelName,
                 messages = chatHistory.ToArray(),
                 temperature = Temperature,
                 max_tokens = MaximumLength,
                 frequency_penalty = FrequencyPenalty,
                 presence_penalty = PresencePenalty
             };
-            Debug.Log(JsonConvert.SerializeObject(requestBody));
             return JsonConvert.SerializeObject(requestBody);
         }
-
-        private string BuildLegacyRequestBody(string p)
-        {
-            var requestBody = new
-            {
-                model = _modelName,
-                prompt = p,
-                temperature = Temperature,
-                max_tokens = MaximumLength,
-                frequency_penalty = FrequencyPenalty,
-                presence_penalty = PresencePenalty,
-                stop = _stopSequences
-            };
-            
-            return JsonConvert.SerializeObject(requestBody);
-        }
-        
 
         // Remove trailing sentences and white spaces.
         private string FormatResponse(string response)
@@ -241,16 +196,8 @@ namespace Simple_GPT_Dialog
             return lastTrimIndex > 1 ? response.Substring(0, lastTrimIndex + 1) : response;
         }
 
-        private string FormatPrompt(string prompt)
-        {
-            if (prompt.Contains(_playerName + ":")) prompt = prompt.Replace(_playerName + ":", "");
-            prompt = prompt.Trim();
-            return prompt;
-        }
-
         IEnumerator ChatRequest(List<Message> chatHistory)
         {
-            Debug.Log("Chat request started!");
             byte[] body = Encoding.UTF8.GetBytes(BuildRequestBody(chatHistory));
 
             UnityWebRequest request = new UnityWebRequest("https://api.openai.com/v1/chat/completions", "POST");
@@ -312,7 +259,6 @@ namespace Simple_GPT_Dialog
             }
             else
             {
-                Debug.Log("character.CurrentTopicReactionPair !== null");
                 for (int i = 0; i < character.CurrentTopicReactionPair.Children.Count; i++)
                 {
                     prompt += listIndex + ". " + character.CurrentTopicReactionPair.Children[i].Topic + "\n";
@@ -326,7 +272,7 @@ namespace Simple_GPT_Dialog
             
             var requestBody = new
             {
-                model = _modelName,
+                model = ModelName,
                 messages = checkableChatHistory.ToArray(),
                 temperature = 0
             };
@@ -373,54 +319,14 @@ namespace Simple_GPT_Dialog
                 StartCoroutine(ChatRequest(_currentChatHistory));
             }
         }
-        
-        IEnumerator LegacyChatRequest(string p)
-        {
-            byte[] body = Encoding.UTF8.GetBytes(BuildLegacyRequestBody(p));
 
-            UnityWebRequest request = new UnityWebRequest("https://api.openai.com/v1/completion", "POST");
-
-            _waitingForResponse = true;
-
-            request.uploadHandler = new UploadHandlerRaw(body);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", "Bearer " + _apiKey);
-
-            yield return request.SendWebRequest();
-
-            _waitingForResponse = false;
-
-            if (request.isNetworkError || request.isHttpError)
-            {
-                Debug.LogAssertion($"Connecting to GPT failed: {request.error}");
-                APIKeyWarning();
-                request.Dispose();
-                yield return new WaitForSeconds(0.5f);
-                StartCoroutine(LegacyChatRequest(p));
-            }
-            else
-            {
-                JObject responseObject = JObject.Parse(request.downloadHandler.text);
-                _response = responseObject["choices"][0]["text"].ToString();
-                _response = FormatResponse(_response);
-                _currentResponseHistory += _response;
-                request.Dispose();
-
-                if (onGPTChatResponse != null)
-                {
-                    onGPTChatResponse(_response, _currentResponseHistory, _npcName);
-                }
-            }
-        }
-        
         IEnumerator TestRequest()
         {
             List<Message> messagesList = new List<Message>();
             messagesList.Add(new Message("user", "test"));
             var requestBody = new
             {
-                model = _modelName,
+                model = ModelName,
                 messages = messagesList.ToArray(),
                 temperature = 0,
                 max_tokens = 4,
@@ -459,51 +365,6 @@ namespace Simple_GPT_Dialog
                 JObject responseObject = JObject.Parse(request.downloadHandler.text);
                 _response = responseObject.ToString();
                 Debug.Log("Connecting to GPT succeeded!");
-                request.Dispose();
-            }
-        }
-
-        IEnumerator LegacyTestRequest()
-        {
-            var requestBody = new
-            {
-                model = _modelName,
-                prompt = "a",
-                temperature = 0,
-                max_tokens = 1,
-                frequency_penalty = 0,
-                presence_penalty = 0
-            };
-
-            string r = JsonConvert.SerializeObject(requestBody);
-            byte[] body = Encoding.UTF8.GetBytes(r);
-
-            var request = new UnityWebRequest("https://api.openai.com/v1/completions", "POST");
-
-            _waitingForResponse = true;
-
-            request.uploadHandler = new UploadHandlerRaw(body);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", "Bearer " + _apiKey);
-
-            yield return request.SendWebRequest();
-
-            _waitingForResponse = false;
-
-            // Check for errors
-            if (request.isNetworkError || request.isHttpError)
-            {
-                Debug.LogAssertion($"Connecting to GPT failed: {request.error}");
-                APIKeyWarning();
-                request.Dispose();
-                _failedRequestWaitTime += 1f;
-                yield return new WaitForSeconds(_failedRequestWaitTime);
-                StartCoroutine(LegacyTestRequest());
-            }
-            else
-            {
-                Debug.Log("Connecting to GPT succeeded");
                 request.Dispose();
             }
         }
