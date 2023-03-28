@@ -1,5 +1,7 @@
 # Simple GPT Toolkit
 
+![alt text](Screenshot.png)
+
 With this pack of demos you should be able to hit the ground running, if you're interested in making a game powered by OpenAI's GPT.
 
 ### Getting started
