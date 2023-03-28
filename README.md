@@ -12,7 +12,7 @@ With this pack of demos you should be able to hit the ground running, if you're 
 
 **4.** When you have the API key on your clipboard, you can hop back into Unity. In Unity, open the 'OpenAI API Key' window from the 'Window' drop down.
 
-**5.** Paste the API key into this window and click the Save button. This will save the API key locally - and only locally - in PlayerPrefs. More on API key safety here.
+**5.** Paste the API key into this window and click the Save button. *This will only save the API key locally, to PlayerPrefs.* You can check out what the clicking the Save button does [here](https://github.com/enkomat/Simple-GPT-Demos/blob/main/Assets/Simple%20GPT%20Toolkit/Editor/OpenAIApiKey.cs). More on API key safety [here](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 **6.** Install [TextMesh Pro](https://docs.unity3d.com/Packages/com.unity.textmeshpro@3.0/manual/index.html) if you don't have it in your project already.
 
