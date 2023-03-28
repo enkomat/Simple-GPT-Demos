@@ -23,9 +23,11 @@ namespace Simple_GPT_Dialog
         }
 
         [Tooltip(
-            "Model used to generate the text. Davinci is by far the best, but slowest. Ada is worst, but fastest.")]
+            "Model used to generate the text.")]
         public ModelOptions Model;
-
+        [Tooltip(
+            "Checking game state only works with ChatGPT.")]
+        public bool CheckForGameStateChanges = false;
         private string _modelName;
         public bool AutoLoadOnAwake = true;
 
@@ -42,7 +44,7 @@ namespace Simple_GPT_Dialog
 
         [Range(0.0f, 2.0f)] [Tooltip("Increases the model's likelihood to talk about new topics.")]
         public float PresencePenalty = 0f;
-
+        
         #endregion
 
         #region Private Variables
@@ -82,16 +84,20 @@ namespace Simple_GPT_Dialog
             else if (Model == ModelOptions.Babbage) _modelName = "text-babbage-001";
             else if (Model == ModelOptions.Ada) _modelName = "text-ada-001";
         }
-
-        private void Awake()
+        
+        private void APIKeyWarning()
         {
-            _apiKey = PlayerPrefs.GetString("OPENAI_API_KEY");
             if (String.IsNullOrEmpty(_apiKey))
             {
                 Debug.LogAssertion(
                     "API key not set! You can set the API key inside Unity, at Window -> OpenAI API Key. If you don't have an API key, you need to register to OpenAI. ");
             }
+        }
 
+        private void Awake()
+        {
+            _apiKey = PlayerPrefs.GetString("OPENAI_API_KEY");
+            APIKeyWarning();
             if (AutoLoadOnAwake) TestGPTConnection();
         }
         
@@ -113,6 +119,7 @@ namespace Simple_GPT_Dialog
             _currentChatHistory = new List<Message>();
             _currentChatHistory.Add(new Message("system", "The following is a conversation between user called " + _playerName + " and a character called " + _npcName +
                                                           ".\n \n" + description + ". In between, there are parts denoted with <REACTION>: keyword that describe the characters next reply and reaction. Only answers as the " + _npcName + " character. Never breaks character."));
+            _stopSequences = new string[] { playerName + ":", npcName + ":" };
         }
 
         public void StartNewChat(string playerName, SimpleGPTCharacter character, string description)
@@ -152,7 +159,14 @@ namespace Simple_GPT_Dialog
             _currentChatHistory.Add(new Message("user", _playerName + ": " + prompt));
             if (Model == ModelOptions.ChatGPT)
             {
-                StartCoroutine(CheckForStateChange2(_currentChatHistory, _currentCharacter));
+                if (CheckForGameStateChanges)
+                {
+                    StartCoroutine(CheckForStateChange(_currentChatHistory, _currentCharacter));
+                }
+                else
+                {
+                    StartCoroutine(ChatRequest(_currentChatHistory));
+                }
             }
             else StartCoroutine(LegacyChatRequest(_currentResponseHistory));
         }
@@ -255,6 +269,7 @@ namespace Simple_GPT_Dialog
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.LogError(request.error);
+                APIKeyWarning();
                 request.Dispose();
                 yield return new WaitForSeconds(0.5f);
                 StartCoroutine(ChatRequest(chatHistory));
@@ -271,60 +286,16 @@ namespace Simple_GPT_Dialog
                 {
                     onGPTChatResponse(_response, _currentResponseHistory, _npcName);
                 }
-                
-                //yield return new WaitForSeconds(0.5f);
-                //StartCoroutine(CheckForStateChange(chatHistory));
             }
         }
 
-        IEnumerator CheckForStateChange(List<Message> chatHistory)
-        {
-            List<Message> checkableChatHistory = new List<Message>();
-            checkableChatHistory.AddRange(chatHistory);
-            checkableChatHistory[0] = new Message("system",
-                "This is an assistant that analyzes words and sentences.");
-            checkableChatHistory[^1] = new Message("user", checkableChatHistory[^1].content + "\n \n Analyze above chat for a state change. Possible state changes: 1. Dapper attacks, 2. Dapper does not attack, 3. Dapper is angry \n \n  Pick one from the numbered list. Answer format: STATE: <picked state>");
-
-            byte[] body = Encoding.UTF8.GetBytes(BuildRequestBody(checkableChatHistory));
-
-            UnityWebRequest request = new UnityWebRequest("https://api.openai.com/v1/chat/completions", "POST");
-
-            _waitingForResponse = true;
-
-            request.uploadHandler = new UploadHandlerRaw(body);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", "Bearer " + _apiKey);
-
-            yield return request.SendWebRequest();
-            
-            _waitingForResponse = false;
-
-            if (request.isNetworkError || request.isHttpError)
-            {
-                Debug.LogError(request.error);
-                request.Dispose();
-                yield return new WaitForSeconds(0.5f);
-                StartCoroutine(CheckForStateChange(chatHistory));
-            }
-            else
-            {
-                JObject responseObject = JObject.Parse(request.downloadHandler.text);
-                _response = responseObject["choices"][0]["message"]["content"].ToString();
-                _response = FormatResponse(_response);
-                Debug.Log(responseObject["choices"][0]["message"]["content"].ToString());
-                request.Dispose();
-            }
-        }
-        
-        IEnumerator CheckForStateChange2(List<Message> chatHistory, SimpleGPTCharacter character)
+        IEnumerator CheckForStateChange(List<Message> chatHistory, SimpleGPTCharacter character)
         {
             List<Message> checkableChatHistory = new List<Message>();
             checkableChatHistory.AddRange(chatHistory);
             checkableChatHistory[0] = new Message("system",
                 "This is an assistant that analyzes chat messages by picking topics from a provided list.");
-
-            string formattedPrompt = FormatPrompt(chatHistory[^1].content);
+            
             string prompt = checkableChatHistory[^1].content + "\n \nAnalyze the last reply from the user for its topic.\n";
             List<SimpleGPTCharacter.TopicReactionPair> topics = new List<SimpleGPTCharacter.TopicReactionPair>();
             int listIndex = 1;
@@ -378,9 +349,10 @@ namespace Simple_GPT_Dialog
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.LogError(request.error);
+                APIKeyWarning();
                 request.Dispose();
                 yield return new WaitForSeconds(0.5f);
-                StartCoroutine(CheckForStateChange2(chatHistory, _currentCharacter));
+                StartCoroutine(CheckForStateChange(chatHistory, _currentCharacter));
             }
             else
             {
@@ -421,6 +393,8 @@ namespace Simple_GPT_Dialog
 
             if (request.isNetworkError || request.isHttpError)
             {
+                Debug.LogAssertion($"Connecting to GPT failed: {request.error}");
+                APIKeyWarning();
                 request.Dispose();
                 yield return new WaitForSeconds(0.5f);
                 StartCoroutine(LegacyChatRequest(p));
@@ -474,6 +448,7 @@ namespace Simple_GPT_Dialog
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.LogAssertion($"Connecting to GPT failed: {request.error}");
+                APIKeyWarning();
                 request.Dispose();
                 _failedRequestWaitTime += 1f;
                 yield return new WaitForSeconds(_failedRequestWaitTime);
@@ -520,6 +495,7 @@ namespace Simple_GPT_Dialog
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.LogAssertion($"Connecting to GPT failed: {request.error}");
+                APIKeyWarning();
                 request.Dispose();
                 _failedRequestWaitTime += 1f;
                 yield return new WaitForSeconds(_failedRequestWaitTime);

@@ -396,7 +396,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d3464fbf298b04ed6aac78221e1c95f5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -441,6 +441,120 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &845796994
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 52.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 38.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184065, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: DialogBG
+      value: 
+      objectReference: {fileID: 1535904721}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: SpeechBox
+      value: 
+      objectReference: {fileID: 1367955260}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: ChatDistance
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: CharacterName
+      value: Theo
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: CharacterImage
+      value: 
+      objectReference: {fileID: 1776321795}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: CharacterLocation
+      value: Not sure.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: CharacterDescription
+      value: Just chilling around.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[0].Reaction
+      value: Hone tells the user to to go away.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[1].Reaction
+      value: Hone tells the user that there's a town called Hambo near by. Nothing
+        else.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[0].Children.Array.data[0].Reaction
+      value: Hone attack immediately.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[1].Children.Array.data[0].Reaction
+      value: Hone tells the player to go away.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[1].Children.Array.data[1].Reaction
+      value: Hone tells the player to scram off and stop wasting his time.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[1].Children.Array.data[0].Children.Array.data[0].Reaction
+      value: Hone attack immediately.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: TopicReactionPairs.Array.data[1].Children.Array.data[1].Children.Array.data[0].Reaction
+      value: Hone attacks immediately
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184068, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: m_Name
+      value: Character3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: be5468f73106d4e64877dff239d2340f, type: 3}
 --- !u!1 &864471649
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +614,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  mouseSensitivity: 1500
+  mouseSensitivity: 2500
   upDownRange: 80
   smoothing: 2
   character: {fileID: 700447096}
@@ -977,6 +1091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Model: 0
+  CheckForGameStateChanges: 0
   AutoLoadOnAwake: 1
   Temperature: 0.242
   MaximumLength: 47
@@ -1550,7 +1665,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6056511402890955532, guid: 9460d7e034b4640fc869f19b4eae1e0c, type: 3}
       propertyPath: m_Name
-      value: PeasantCharacter
+      value: Character1
       objectReference: {fileID: 0}
     - target: {fileID: 6056511402890955537, guid: 9460d7e034b4640fc869f19b4eae1e0c, type: 3}
       propertyPath: m_RootOrder
@@ -1604,6 +1719,10 @@ PrefabInstance:
       propertyPath: SpeechBox
       value: 
       objectReference: {fileID: 1367955260}
+    - target: {fileID: 6056511402890955539, guid: 9460d7e034b4640fc869f19b4eae1e0c, type: 3}
+      propertyPath: ChatDistance
+      value: 7.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6056511402890955539, guid: 9460d7e034b4640fc869f19b4eae1e0c, type: 3}
       propertyPath: CharacterName
       value: Dude
@@ -1697,6 +1816,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1367955260}
     - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
+      propertyPath: ChatDistance
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7400154938721184067, guid: be5468f73106d4e64877dff239d2340f, type: 3}
       propertyPath: CharacterName
       value: Hone
       objectReference: {fileID: 0}
@@ -1742,7 +1865,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7400154938721184068, guid: be5468f73106d4e64877dff239d2340f, type: 3}
       propertyPath: m_Name
-      value: KnightCharacter
+      value: Character2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be5468f73106d4e64877dff239d2340f, type: 3}
@@ -1764,6 +1887,18 @@ PrefabInstance:
     - target: {fileID: 3247077562522215535, guid: dbc8e3264a0e74993b11ec264c22bd5a, type: 3}
       propertyPath: m_RootOrder
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3247077562522215535, guid: dbc8e3264a0e74993b11ec264c22bd5a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3247077562522215535, guid: dbc8e3264a0e74993b11ec264c22bd5a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3247077562522215535, guid: dbc8e3264a0e74993b11ec264c22bd5a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 3247077562522215535, guid: dbc8e3264a0e74993b11ec264c22bd5a, type: 3}
       propertyPath: m_LocalPosition.x

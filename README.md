@@ -27,3 +27,7 @@ With this pack of demos you should be able to hit the ground running, if you're 
 **3. SimpleGPTCharacter** is a script you attach to any NPC you want to chat with in your game world. You can add the character's name and description, which are then used to build out the character for the GPT. This information is essentially added to the requests you send to GPT, and GPT is able to act out the character based on that.
 
 **4. SimpleGPTPlayer** very close to the above, but should only be attached to the player. This is how GPT knows your character's role in the world you're building.
+
+### Kenney assets
+
+The graphics in the 3D scene are from [Kenney](https://www.kenney.nl/assets/tiny-town) [assets](https://www.kenney.nl/assets/blocky-characters).
